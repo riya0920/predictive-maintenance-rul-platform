@@ -1,0 +1,170 @@
+[
+  {
+    "fd": "FD001",
+    "variant": "cycle only",
+    "rmse": 30.957135183209914,
+    "phm": 3455.3640284368926
+  },
+  {
+    "fd": "FD001",
+    "use_cycle": true,
+    "normalise": true,
+    "n_features": 85,
+    "rmse": 12.530962584597672,
+    "phm": 238.5933061017865,
+    "variant": "+cycle +condnorm"
+  },
+  {
+    "fd": "FD001",
+    "use_cycle": true,
+    "normalise": false,
+    "n_features": 85,
+    "rmse": 12.44266399656292,
+    "phm": 242.09360003762052,
+    "variant": "+cycle -condnorm"
+  },
+  {
+    "fd": "FD001",
+    "use_cycle": false,
+    "normalise": true,
+    "n_features": 84,
+    "rmse": 13.510813429953087,
+    "phm": 303.1906586603231,
+    "variant": "-cycle +condnorm"
+  },
+  {
+    "fd": "FD001",
+    "use_cycle": false,
+    "normalise": false,
+    "n_features": 84,
+    "rmse": 13.440401910021237,
+    "phm": 291.8440346928044,
+    "variant": "-cycle -condnorm"
+  },
+  {
+    "fd": "FD002",
+    "variant": "cycle only",
+    "rmse": 29.627100898116204,
+    "phm": 9008.54322592936
+  },
+  {
+    "fd": "FD002",
+    "use_cycle": true,
+    "normalise": true,
+    "n_features": 97,
+    "rmse": 13.097975272466044,
+    "phm": 829.4328951663963,
+    "variant": "+cycle +condnorm"
+  },
+  {
+    "fd": "FD002",
+    "use_cycle": true,
+    "normalise": false,
+    "n_features": 97,
+    "rmse": 15.54462075569659,
+    "phm": 1206.1344723270688,
+    "variant": "+cycle -condnorm"
+  },
+  {
+    "fd": "FD002",
+    "use_cycle": false,
+    "normalise": true,
+    "n_features": 96,
+    "rmse": 13.887608378077816,
+    "phm": 981.0142537394885,
+    "variant": "-cycle +condnorm"
+  },
+  {
+    "fd": "FD002",
+    "use_cycle": false,
+    "normalise": false,
+    "n_features": 96,
+    "rmse": 16.320399268843147,
+    "phm": 1354.8636522069187,
+    "variant": "-cycle -condnorm"
+  },
+  {
+    "fd": "FD003",
+    "variant": "cycle only",
+    "rmse": 33.800973872021636,
+    "phm": 8611.222910123328
+  },
+  {
+    "fd": "FD003",
+    "use_cycle": true,
+    "normalise": true,
+    "n_features": 91,
+    "rmse": 12.89973071892886,
+    "phm": 338.14492188267656,
+    "variant": "+cycle +condnorm"
+  },
+  {
+    "fd": "FD003",
+    "use_cycle": true,
+    "normalise": false,
+    "n_features": 91,
+    "rmse": 12.589686068692176,
+    "phm": 306.617664121685,
+    "variant": "+cycle -condnorm"
+  },
+  {
+    "fd": "FD003",
+    "use_cycle": false,
+    "normalise": true,
+    "n_features": 90,
+    "rmse": 14.16688319157454,
+    "phm": 433.1754560086693,
+    "variant": "-cycle +condnorm"
+  },
+  {
+    "fd": "FD003",
+    "use_cycle": false,
+    "normalise": false,
+    "n_features": 90,
+    "rmse": 14.111376609360555,
+    "phm": 426.74463929048386,
+    "variant": "-cycle -condnorm"
+  },
+  {
+    "fd": "FD004",
+    "variant": "cycle only",
+    "rmse": 38.8119826970366,
+    "phm": 53256.50344829299
+  },
+  {
+    "fd": "FD004",
+    "use_cycle": true,
+    "normalise": true,
+    "n_features": 97,
+    "rmse": 14.398613121897933,
+    "phm": 999.7965664955932,
+    "variant": "+cycle +condnorm"
+  },
+  {
+    "fd": "FD004",
+    "use_cycle": true,
+    "normalise": false,
+    "n_features": 97,
+    "rmse": 17.19059764573687,
+    "phm": 1747.9145018993963,
+    "variant": "+cycle -condnorm"
+  },
+  {
+    "fd": "FD004",
+    "use_cycle": false,
+    "normalise": true,
+    "n_features": 96,
+    "rmse": 16.16170903051158,
+    "phm": 1300.372883010873,
+    "variant": "-cycle +condnorm"
+  },
+  {
+    "fd": "FD004",
+    "use_cycle": false,
+    "normalise": false,
+    "n_features": 96,
+    "rmse": 18.099285254840474,
+    "phm": 2106.2186578954716,
+    "variant": "-cycle -condnorm"
+  }
+]
