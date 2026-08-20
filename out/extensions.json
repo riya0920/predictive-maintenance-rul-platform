@@ -1,0 +1,393 @@
+{
+  "cap_decision": [
+    {
+      "cap": 90,
+      "policy": "RUL<20, k=3",
+      "cost_per_unit": 1.139,
+      "lead_mean": 15.7,
+      "lead_p05": 11.0,
+      "missed_rate": 0.0,
+      "nuisance_per_unit": 0.05,
+      "frac_ge_10": 1.0
+    },
+    {
+      "cap": 110,
+      "policy": "RUL<25, k=3",
+      "cost_per_unit": 1.216,
+      "lead_mean": 19.55,
+      "lead_p05": 13.85,
+      "missed_rate": 0.0,
+      "nuisance_per_unit": 0.05,
+      "frac_ge_10": 1.0
+    },
+    {
+      "cap": 125,
+      "policy": "RUL<25, k=5",
+      "cost_per_unit": 1.1640000000000001,
+      "lead_mean": 16.95,
+      "lead_p05": 12.0,
+      "missed_rate": 0.0,
+      "nuisance_per_unit": 0.05,
+      "frac_ge_10": 1.0
+    },
+    {
+      "cap": 140,
+      "policy": "RUL<20, k=3",
+      "cost_per_unit": 1.174,
+      "lead_mean": 14.95,
+      "lead_p05": 11.0,
+      "missed_rate": 0.0,
+      "nuisance_per_unit": 0.15,
+      "frac_ge_10": 1.0
+    },
+    {
+      "cap": 200,
+      "policy": "RUL<30, k=8",
+      "cost_per_unit": 1.163,
+      "lead_mean": 18.15,
+      "lead_p05": 13.8,
+      "missed_rate": 0.0,
+      "nuisance_per_unit": 0.0,
+      "frac_ge_10": 1.0
+    },
+    {
+      "cap": "none",
+      "policy": "RUL<25, k=5",
+      "cost_per_unit": 1.196,
+      "lead_mean": 17.3,
+      "lead_p05": 12.9,
+      "missed_rate": 0.0,
+      "nuisance_per_unit": 0.1,
+      "frac_ge_10": 1.0
+    }
+  ],
+  "drift": {
+    "reference": "FD001 train",
+    "alarm_threshold": 25.0,
+    "reference_alarm_rate": 0.1212084592145015,
+    "windows": [
+      {
+        "window": "w0: held-out FD001 train units (control)",
+        "n_features_drifted": 0,
+        "max_feature_psi": 0.21630344200023338,
+        "score_psi": 0.018249989725699075,
+        "alarm_rate_now": 0.11182011546642358,
+        "alarm_rate_ref": 0.1212084592145015,
+        "alarm_rate_ratio": 0.9225438240126173,
+        "breached": false,
+        "reasons": [],
+        "consecutive_breaches": 0,
+        "RETRAIN": false,
+        "action": "no action",
+        "top_drifted": [
+          {
+            "feature": "s8_rm20",
+            "psi": 0.21630344200023338,
+            "band": "moderate"
+          },
+          {
+            "feature": "s13_rm20",
+            "psi": 0.20858097040033502,
+            "band": "moderate"
+          },
+          {
+            "feature": "s9_rm20",
+            "psi": 0.17962952292329704,
+            "band": "moderate"
+          },
+          {
+            "feature": "s7_rm20",
+            "psi": 0.17563273907299265,
+            "band": "moderate"
+          },
+          {
+            "feature": "s14_rm20",
+            "psi": 0.16293651280168084,
+            "band": "moderate"
+          }
+        ]
+      },
+      {
+        "window": "w0b: FD001 test (same conditions, CENSORED)",
+        "n_features_drifted": 36,
+        "max_feature_psi": 0.4774224473325747,
+        "score_psi": 0.5290905053772257,
+        "alarm_rate_now": 0.013362858888210141,
+        "alarm_rate_ref": 0.1212084592145015,
+        "alarm_rate_ratio": 0.11024691655028805,
+        "breached": true,
+        "reasons": [
+          "36 features at PSI >= 0.25",
+          "prediction PSI 0.529",
+          "alarm rate x0.11"
+        ],
+        "consecutive_breaches": 1,
+        "RETRAIN": false,
+        "action": "investigate \u2014 single window breached",
+        "top_drifted": [
+          {
+            "feature": "s3_rm20",
+            "psi": 0.4774224473325747,
+            "band": "significant"
+          },
+          {
+            "feature": "s17_rm20",
+            "psi": 0.47127117484118863,
+            "band": "significant"
+          },
+          {
+            "feature": "s4_rm20",
+            "psi": 0.46049523130085,
+            "band": "significant"
+          },
+          {
+            "feature": "s21_rm20",
+            "psi": 0.4585070269330624,
+            "band": "significant"
+          },
+          {
+            "feature": "s15_rm20",
+            "psi": 0.44688297108278635,
+            "band": "significant"
+          }
+        ]
+      },
+      {
+        "window": "w1: FD003 test (extra fault mode)",
+        "n_features_drifted": 53,
+        "max_feature_psi": 1.8420009807518967,
+        "score_psi": 1.0321625084608808,
+        "alarm_rate_now": 0.0021089419137141478,
+        "alarm_rate_ref": 0.1212084592145015,
+        "alarm_rate_ratio": 0.01739929644664464,
+        "breached": true,
+        "reasons": [
+          "53 features at PSI >= 0.25",
+          "prediction PSI 1.032",
+          "alarm rate x0.02"
+        ],
+        "consecutive_breaches": 2,
+        "RETRAIN": true,
+        "action": "RETRAIN \u2014 persistent, multi-feature drift",
+        "top_drifted": [
+          {
+            "feature": "s15_rm20",
+            "psi": 1.8420009807518967,
+            "band": "significant"
+          },
+          {
+            "feature": "s15_rm5",
+            "psi": 1.7447372896654625,
+            "band": "significant"
+          },
+          {
+            "feature": "s2_rm20",
+            "psi": 1.5684024769505227,
+            "band": "significant"
+          },
+          {
+            "feature": "s20_rm20",
+            "psi": 1.520831744603237,
+            "band": "significant"
+          },
+          {
+            "feature": "s21_rm20",
+            "psi": 1.5097642387880323,
+            "band": "significant"
+          }
+        ]
+      },
+      {
+        "window": "w2: FD002 test, one regime only",
+        "n_features_drifted": 69,
+        "max_feature_psi": 15.725318459689248,
+        "score_psi": 5.67786245090079,
+        "alarm_rate_now": 0.0,
+        "alarm_rate_ref": 0.1212084592145015,
+        "alarm_rate_ratio": 0.0,
+        "breached": true,
+        "reasons": [
+          "69 features at PSI >= 0.25",
+          "prediction PSI 5.678",
+          "alarm rate x0.00"
+        ],
+        "consecutive_breaches": 2,
+        "RETRAIN": true,
+        "action": "RETRAIN \u2014 persistent, multi-feature drift",
+        "top_drifted": [
+          {
+            "feature": "s17",
+            "psi": 15.725318459689248,
+            "band": "significant"
+          },
+          {
+            "feature": "s17_rm5",
+            "psi": 13.349437066636872,
+            "band": "significant"
+          },
+          {
+            "feature": "s8",
+            "psi": 12.974344562593537,
+            "band": "significant"
+          },
+          {
+            "feature": "s20",
+            "psi": 12.588621348471777,
+            "band": "significant"
+          },
+          {
+            "feature": "s17_rm20",
+            "psi": 12.55663632969489,
+            "band": "significant"
+          }
+        ]
+      },
+      {
+        "window": "w3: FD002 test, all six regimes",
+        "n_features_drifted": 84,
+        "max_feature_psi": 10.852488890546546,
+        "score_psi": 4.416761025372443,
+        "alarm_rate_now": 0.0,
+        "alarm_rate_ref": 0.1212084592145015,
+        "alarm_rate_ratio": 0.0,
+        "breached": true,
+        "reasons": [
+          "84 features at PSI >= 0.25",
+          "prediction PSI 4.417",
+          "alarm rate x0.00"
+        ],
+        "consecutive_breaches": 2,
+        "RETRAIN": true,
+        "action": "RETRAIN \u2014 persistent, multi-feature drift",
+        "top_drifted": [
+          {
+            "feature": "s17_rm5",
+            "psi": 10.852488890546546,
+            "band": "significant"
+          },
+          {
+            "feature": "s17_sd20",
+            "psi": 10.336048928591982,
+            "band": "significant"
+          },
+          {
+            "feature": "s17_rm20",
+            "psi": 10.21238487826358,
+            "band": "significant"
+          },
+          {
+            "feature": "s8_sd20",
+            "psi": 9.887886006359095,
+            "band": "significant"
+          },
+          {
+            "feature": "s3_sd20",
+            "psi": 9.284401816113677,
+            "band": "significant"
+          }
+        ]
+      }
+    ]
+  },
+  "faultmode": [
+    {
+      "fd": "FD003",
+      "silhouette": 0.4239340245705369,
+      "null_silhouette_fd001": 0.33676898401608846,
+      "cluster_sizes": {
+        "0": 48,
+        "1": 32
+      },
+      "null_cluster_sizes": {
+        "0": 43,
+        "1": 57
+      },
+      "separating_sensors": [
+        {
+          "sensor": "s20",
+          "centroid_gap": 1.9658749020647923
+        },
+        {
+          "sensor": "s15",
+          "centroid_gap": 1.9636042622071939
+        },
+        {
+          "sensor": "s21",
+          "centroid_gap": 1.9599915418692069
+        },
+        {
+          "sensor": "s7",
+          "centroid_gap": 1.9484547526528222
+        },
+        {
+          "sensor": "s12",
+          "centroid_gap": 1.9454468121945716
+        },
+        {
+          "sensor": "s13",
+          "centroid_gap": 1.5010222174239363
+        }
+      ],
+      "single_model": {
+        "rmse": 12.76839834708837,
+        "phm": 288.6583135150695
+      },
+      "mode_aware": {
+        "rmse": 13.644230295153418,
+        "phm": 313.9385014925903
+      },
+      "rmse_delta": 0.8758319480650485,
+      "phm_delta": 25.280187977520825
+    },
+    {
+      "fd": "FD004",
+      "silhouette": 0.39571513143219883,
+      "null_silhouette_fd001": 0.33676898401608846,
+      "cluster_sizes": {
+        "0": 139,
+        "1": 90
+      },
+      "null_cluster_sizes": {
+        "0": 43,
+        "1": 57
+      },
+      "separating_sensors": [
+        {
+          "sensor": "s15",
+          "centroid_gap": 1.9500122676718705
+        },
+        {
+          "sensor": "s12",
+          "centroid_gap": 1.9285857638848938
+        },
+        {
+          "sensor": "s7",
+          "centroid_gap": 1.9268910734856721
+        },
+        {
+          "sensor": "s20",
+          "centroid_gap": 1.9149802553177202
+        },
+        {
+          "sensor": "s21",
+          "centroid_gap": 1.9139504370475868
+        },
+        {
+          "sensor": "s10",
+          "centroid_gap": 1.8976504591833292
+        }
+      ],
+      "single_model": {
+        "rmse": 14.484414257700696,
+        "phm": 1051.7796894425578
+      },
+      "mode_aware": {
+        "rmse": 16.690682467977847,
+        "phm": 2370.0848207435183
+      },
+      "rmse_delta": 2.206268210277152,
+      "phm_delta": 1318.3051313009605
+    }
+  ],
+  "wall_seconds": 2936.684091400006
+}

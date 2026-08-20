@@ -1,11 +1,17 @@
 # ML-1 — Predictive Maintenance Platform (RUL + deployment reality)
 
-**Status: ~20% slice.** The measurement, the maintenance-decision layer, and the
-edge-export story are built and run end to end on **real NASA C-MAPSS data, all
-four sub-datasets**. MLflow, drift monitoring, and the retraining trigger are not.
-See [what is NOT built](#what-is-not-built-the-other-80) — and read
+**Status: ~50% slice.** The measurement, the maintenance-decision layer, the
+edge-export story, **drift monitoring with a retrain trigger**, and **fault-mode
+discovery** are built and run end to end on **real NASA C-MAPSS data, all four
+sub-datasets**. MLflow, serving, and a second sequence model are not. See
+[what is NOT built](#what-is-not-built-the-other-50) — and read
 [docs/DEPLOYMENT_REALITY.md](docs/DEPLOYMENT_REALITY.md) before believing any
 number here about a real fleet.
+
+The second build's results are in **[docs/EXTENSIONS.md](docs/EXTENSIONS.md)**
+(`python extend.py`): the cap-neutral test this README previously said was
+missing, a retrain trigger with magnitude/persistence/scope rules, and fault-mode
+discovery with a null.
 
 ```bash
 python train.py
@@ -126,8 +132,13 @@ Three things fall out:
   advantage rather than removing it. There is no fixed truth on which caps compare
   neutrally. **The cap-neutral test is the decision layer** — refit the alarm policy
   per cap and compare lead time, missed rate and nuisance alarms, all of which live
-  below RUL 50. That is not run, and it is named as the experiment I'd want before
-  defending a specific cap value.
+  below RUL 50.
+
+  **That test is now run** ([EXTENSIONS.md §1](docs/EXTENSIONS.md)) and it settles
+  the question: the cost spread across caps 90–200 is **0.08 per unit, nearly
+  flat**, where RMSE-on-a-subset had made cap 90 look 40% better than cap 140. So
+  the defensible statement is *cap, and do not agonise over the value* — which is
+  what the literature's unquestioned 125 has quietly assumed all along.
 - **GBM vs LSTM, both reported** (`src/models.py`). The GBM wins on all four
   sub-datasets, on both RMSE and the PHM score, while fitting in 5–12 seconds
   against the LSTM's 87–442. That is the practitioner artifact: deep did not beat
@@ -159,24 +170,45 @@ Three things fall out:
   pinned to one CPU thread, with size, p50/p99 latency, and the RUL disagreement
   int8 costs.
 
-## What is NOT built (the other 80%)
+## Built in the second pass — see [docs/EXTENSIONS.md](docs/EXTENSIONS.md)
+
+- **The cap-neutral test.** RESULTS.md §5 could only support "capping beats not
+  capping" and named the decision layer as the neutral comparison. Run: refit the
+  alarm policy per cap and compare lead time, missed rate and nuisance alarms.
+  **The cost spread across caps 90–200 is 0.08 per unit — nearly flat**, which is
+  the opposite of what RMSE-on-a-subset implied.
+- **Drift monitoring with a retrain trigger** that requires magnitude *and*
+  persistence *and* scope — the scope rule being the one that distinguishes "the
+  model is stale" from "a thermocouple is dying". The control window (held-out
+  training units) is quiet at 0 features breached; a naive control built from the
+  *censored test set* breaches on 36, and that trap is documented rather than
+  hidden.
+- **Fault-mode discovery on FD003/FD004 with FD001 as a null.** The split carries
+  real structure (silhouette 0.42 vs 0.34 null) and mode-aware models still make
+  RMSE **worse**, because halving the training data costs more variance than the
+  bias it removes. Reported as the negative result it is.
+
+## What is NOT built (the other 50%)
 
 1. **No MLflow tracking or registry**, no experiment lineage, no model versioning.
    The condition normaliser is a fitted artefact that would have to travel with
    the model and there is no mechanism for that.
-2. **No drift monitoring and no retrain trigger.** No PSI on input sensors, no
-   Evidently job, no documented threshold that fires a retrain.
-3. **One sequence model, once.** No TCN, no transformer, no ensemble, no
+2. **One sequence model, once.** No TCN, no transformer, no ensemble, no
    hyperparameter search on either family. The LSTM is small on purpose (see
    `src/models.py`) but that also means "deep loses" is a statement about *this*
    LSTM.
-4. **No serving.** No API, no container, no batch scoring job.
-5. **The edge table is a desktop CPU pinned to one thread**, standing in for a
+3. **No serving.** No API, no container, no batch scoring job.
+4. **The edge table is a desktop CPU pinned to one thread**, standing in for a
    gateway. It is not a measurement on gateway hardware and an ARM gateway at
    1.2 GHz will not reproduce it.
-6. **No fault-mode classifier for FD003/FD004.** The known remaining gap is one
-   model averaging two degradation physics; the fix (mode classifier upstream, or
-   a mixture head) is named in RESULTS.md and not built.
+5. **Fault-mode handling is discovery, not classification, and it did not pay.**
+   The clustering finds real structure but mode-aware models score *worse*. A
+   mixture head, or supervision from maintenance records that name the failed
+   component, is the next thing to try and is not built.
+6. **The drift monitor is input-side only.** No labelled backtest against realised
+   failures, so the class of drift where only the sensor-to-life *relationship*
+   changes remains uncovered — named in EXTENSIONS.md §2 as process rather than
+   code.
 7. **20 held-out units per sub-dataset** is a thin basis for a lead-time
    distribution. The P05 lead time is the 5th percentile of at most 20 numbers.
 8. **Everything in [docs/DEPLOYMENT_REALITY.md](docs/DEPLOYMENT_REALITY.md)**:
