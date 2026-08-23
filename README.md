@@ -1,10 +1,12 @@
 # ML-1 — Predictive Maintenance Platform (RUL + deployment reality)
 
-**Status: ~50% slice.** The measurement, the maintenance-decision layer, the
+**Status: complete.** The measurement, the maintenance-decision layer, the
 edge-export story, **drift monitoring with a retrain trigger**, and **fault-mode
 discovery** are built and run end to end on **real NASA C-MAPSS data, all four
-sub-datasets**. MLflow, serving, and a second sequence model are not. See
-[what is NOT built](#what-is-not-built-the-other-50) — and read
+sub-datasets** — plus a model registry that enforces artefact lineage, a scoring
+service, a TCN and an ensemble, concept-drift detection, and the
+deployment-reality numbers priced. See
+[what is NOT built](#what-is-not-built) — and read
 [docs/DEPLOYMENT_REALITY.md](docs/DEPLOYMENT_REALITY.md) before believing any
 number here about a real fleet.
 
@@ -188,33 +190,113 @@ Three things fall out:
   RMSE **worse**, because halving the training data costs more variance than the
   bias it removes. Reported as the negative result it is.
 
-## What is NOT built (the other 50%)
+## Completed in the third pass — see [docs/COMPLETION.md](docs/COMPLETION.md)
 
-1. **No MLflow tracking or registry**, no experiment lineage, no model versioning.
-   The condition normaliser is a fitted artefact that would have to travel with
-   the model and there is no mechanism for that.
-2. **One sequence model, once.** No TCN, no transformer, no ensemble, no
-   hyperparameter search on either family. The LSTM is small on purpose (see
-   `src/models.py`) but that also means "deep loses" is a statement about *this*
-   LSTM.
-3. **No serving.** No API, no container, no batch scoring job.
-4. **The edge table is a desktop CPU pinned to one thread**, standing in for a
-   gateway. It is not a measurement on gateway hardware and an ARM gateway at
-   1.2 GHz will not reproduce it.
-5. **Fault-mode handling is discovery, not classification, and it did not pay.**
-   The clustering finds real structure but mode-aware models score *worse*. A
-   mixture head, or supervision from maintenance records that name the failed
-   component, is the next thing to try and is not built.
-6. **The drift monitor is input-side only.** No labelled backtest against realised
-   failures, so the class of drift where only the sensor-to-life *relationship*
-   changes remains uncovered — named in EXTENSIONS.md §2 as process rather than
-   code.
-7. **20 held-out units per sub-dataset** is a thin basis for a lead-time
-   distribution. The P05 lead time is the 5th percentile of at most 20 numbers.
-8. **Everything in [docs/DEPLOYMENT_REALITY.md](docs/DEPLOYMENT_REALITY.md)**:
-   censored fleets with 4 failures ever, sensor drift and replacement, maintenance-
-   log label noise, fleet heterogeneity. C-MAPSS is a luxury and that document is
-   the list of ways it is one.
+```bash
+python complete.py        # ~45 min; all eight remaining items
+```
+
+All eight items this README previously listed as not built. Three of them closed
+by producing a result I did not expect, and the run found six bugs of my own.
+
+- **A registry that refuses to ship a model without its normaliser.** The gap was
+  named in pass 1 and it is not a packaging nicety: the model is trained on
+  per-regime z-scores, so weights without those statistics still return plausible
+  numbers. Three attempted violations, three refusals — including swapping the
+  normaliser on disk for a *differently fitted but perfectly valid* one, caught by
+  an artefact fingerprint. Uncaught, that swap would have scored
+  **RMSE 36.1 instead of 14.8**:
+  degraded, and nowhere near broken enough for anyone to suspect the normaliser.
+- **A TCN, a hyperparameter grid, and an ensemble — and "deep loses" survives.**
+  The caveat was that the verdict was a statement about one small LSTM. Given a
+  dilated causal TCN with a 61-cycle receptive field and a
+  grid over width and dropout, the TCN scores **16.46
+  RMSE against the GBM's 14.76** — worse, and the
+  simplex-constrained blend gives it a weight of **zero**. The blend
+  (14.01) beats the best single model by
+  0.75 RMSE, on GBM and LSTM alone.
+- **Serving.** 100 units batch-scored, a live HTTP surface,
+  and a Dockerfile that is written but **not built** — there is no container
+  runtime here and saying otherwise would be the overclaim. The design decision
+  worth defending is the refusal: a history shorter than the model's window is
+  rejected rather than left-padded, because padding at serving time fabricates
+  history the engine does not have, and both paths return a number.
+- **Concept drift — the drift class the input monitor structurally cannot see.**
+  Remaining life compressed to 0.65× *without touching a single sensor value*, so
+  P(x) is bit-identical and only P(y|x) moves. The PSI monitor's output changes by
+  **0.0** across
+  2163 rows — silent, and correctly so. The
+  residual monitor fires at **z = 6.8**, direction
+  *optimistic*, after
+  **5 realised failures**. That
+  latency is the finding and it is a property of the fleet, not the monitor: for
+  an operator with four failures a year, a monitor needing five is a post-mortem.
+- **Lead time with intervals.** The P05 was the 5th percentile of 20 numbers.
+  Bootstrapped: median **24
+  [21, 27]**, P05
+  **17 [15, 21]** —
+  an interval 6 cycles wide on a point estimate of
+  17. Quoting the point alone implies a precision this
+  sample does not have.
+- **DEPLOYMENT_REALITY.md, priced.** That document asserted C-MAPSS is a luxury
+  dataset and attached no number to "much harder". Each row now degrades the data
+  along one axis and refits, and **the ordering is the deliverable** — it says
+  where a programme's first year of data-quality work should go. Censoring to
+  8 observed failures costs **+9.0 RMSE**;
+  label noise only starts to bite past sd 15.
+- **The mixture head, and the fault modes still barely pay.** A soft
+  mixture-of-experts fixes the sample-starvation that sank the hard split — every
+  expert trains on all the data, weighted — and wins by **0.16
+  RMSE**. That is a rounding error, and after two attempts the honest read is that
+  these modes are real in the sensor signatures and nearly useless for prediction.
+  I would stop spending on unsupervised gating here.
+- **The edge table, with its extrapolation made explicit.** This one *cannot* be
+  closed honestly — there is no gateway in this environment. What is fixed is the
+  thing that made it misleading: a desktop number presented with no indication of
+  how far it travels. Only the measured row is labelled measured; the ARM rows are
+  frequency scaling and are marked projected.
+
+### Six bugs this pass found in its own work
+
+- **The concept-drift injection did nothing.** It scaled RUL at each unit's *last*
+  cycle, where the piecewise target is 0 by construction. `0 × 0.65 = 0`. The
+  monitors correctly reported no change to data that had not changed.
+- **The PSI control compared two different populations** — all-cycle training rows
+  against 20 end-of-life rows — and reported 85 of 85 features breaching. Same
+  class of error as the FD001 test-set control in pass 2, which I had already
+  written up.
+- **PSI on 20 observations is binning noise.** 74 of 85 features "breached" on
+  provably identical data.
+- **The build-heterogeneity control trained and scored on the same rows.** It came
+  back 12.5 RMSE *better* than the clean baseline, which is the tell.
+- **The sensor-drift experiment ran backwards** — drifting the training set rather
+  than the deployed data — and was also specified at sd/1000 cycles against
+  ~200-cycle lives, so the largest drift injected was 0.1 sd.
+- **The residual monitor compared a mean against a per-observation SD** instead of
+  the standard error of that mean, making it √n ≈ 4.5× too insensitive. It never
+  fired, which looks exactly like a calm process.
+
+## What is NOT built
+
+The eight numbered gaps above are closed. What remains is bounded by the
+environment or by the dataset, and none of it is closable by writing more code
+here:
+
+1. **No gateway hardware.** The ARM latency rows are frequency-scaled projections
+   and are labelled as such. Cache behaviour, memory bandwidth, SIMD width and
+   thermal throttling all differ and all move the number, in the pessimistic
+   direction.
+2. **No container runtime.** `deploy/Dockerfile` and `compose.yaml` are emitted
+   and reviewable; neither has ever been built or run.
+3. **C-MAPSS is still C-MAPSS.** The deployment-reality table injects *models* of
+   censoring, drift, label noise and heterogeneity one at a time. A real fleet has
+   all of them at once, and they interact: the units you have labels for are the
+   units whose labels are worst. That interaction is not simulated.
+4. **20 held-out units.** Bootstrapping now reports how thin that is rather than
+   hiding it, but the interval only shrinks with more units, not more analysis.
+5. **Fault modes need supervision to be worth anything.** Two unsupervised
+   attempts, two near-zero results. The next thing that could work is maintenance
+   records naming the failed component, and there are none in C-MAPSS.
 
 ## Layout
 

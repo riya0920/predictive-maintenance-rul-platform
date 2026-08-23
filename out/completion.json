@@ -1,0 +1,579 @@
+{
+ "quick": false,
+ "registry": {
+  "version": 4,
+  "fingerprint": "743de0d7870f975a",
+  "reload_identical": true,
+  "checks": [
+   {
+    "attempt": "save with no normaliser",
+    "refused": true,
+    "message": "refusing a bundle with no normaliser: the model was trained on per-regime z-scores and can"
+   },
+   {
+    "attempt": "normaliser missing sensors",
+    "refused": true,
+    "message": "normaliser was fitted without ['s7', 's8', 's9', 's11', 's12', 's13', 's14', 's15', 's17',"
+   },
+   {
+    "attempt": "swapped normaliser on disk",
+    "refused": true,
+    "message": "rul-gbm v4 fingerprint mismatch: meta says 743de0d7870f975a, loaded artefacts hash to 98f0"
+   }
+  ],
+  "silent_swap_cost": {
+   "rmse_correct": 14.755767459393956,
+   "rmse_wrong_normaliser": 36.114013279517
+  },
+  "mlflow": true,
+  "index": [
+   {
+    "name": "rul-gbm",
+    "version": 1,
+    "stage": "Production",
+    "kind": "gbm",
+    "fingerprint": "743de0d7870f975a"
+   },
+   {
+    "name": "rul-gbm",
+    "version": 2,
+    "stage": "Production",
+    "kind": "gbm",
+    "fingerprint": "743de0d7870f975a"
+   },
+   {
+    "name": "rul-gbm",
+    "version": 3,
+    "stage": "Production",
+    "kind": "gbm",
+    "fingerprint": "743de0d7870f975a"
+   },
+   {
+    "name": "rul-gbm",
+    "version": 4,
+    "stage": "Production",
+    "kind": "gbm",
+    "fingerprint": "743de0d7870f975a"
+   }
+  ]
+ },
+ "deep": {
+  "window": 30,
+  "search": [
+   {
+    "channels": "(64, 64, 64, 64)",
+    "dropout": "0.1",
+    "val_rmse": 7.133382320404053,
+    "params": 110977,
+    "seconds": 270.08680539997295
+   },
+   {
+    "channels": "(64, 64, 64, 64)",
+    "dropout": "0.2",
+    "val_rmse": 7.171440601348877,
+    "params": 110977,
+    "seconds": 341.66781259997515
+   },
+   {
+    "channels": "(48, 48, 48, 48)",
+    "dropout": "0.1",
+    "val_rmse": 7.5780558586120605,
+    "params": 67121,
+    "seconds": 220.00289290002547
+   },
+   {
+    "channels": "(48, 48, 48, 48)",
+    "dropout": "0.2",
+    "val_rmse": 8.09199047088623,
+    "params": 67121,
+    "seconds": 521.4281515999464
+   },
+   {
+    "channels": "(32, 32, 32)",
+    "dropout": "0.1",
+    "val_rmse": 8.343611717224121,
+    "params": 27745,
+    "seconds": 249.76023120002355
+   },
+   {
+    "channels": "(32, 32, 32)",
+    "dropout": "0.2",
+    "val_rmse": 8.671082496643066,
+    "params": 27745,
+    "seconds": 213.28175409999676
+   }
+  ],
+  "best_config": {
+   "channels": "(64, 64, 64, 64)",
+   "dropout": "0.1",
+   "val_rmse": 7.133382320404053,
+   "params": 110977,
+   "seconds": 270.08680539997295
+  },
+  "params": {
+   "tcn": 110977,
+   "lstm": 80257,
+   "gbm": 400
+  },
+  "receptive_field": 61,
+  "single": {
+   "gbm": {
+    "rmse": 14.755767459393956,
+    "phm": 12677.941221129371
+   },
+   "lstm": {
+    "rmse": 14.937569194829017,
+    "phm": 14610.868132691397
+   },
+   "tcn": {
+    "rmse": 16.462630763710212,
+    "phm": 21475.099318084605
+   }
+  },
+  "residual_correlation": {
+   "gbm~lstm": 0.7566299595799427,
+   "gbm~tcn": 0.7042916874250117,
+   "lstm~tcn": 0.874511699478794
+  },
+  "ensemble": {
+   "weights": {
+    "gbm": 0.55,
+    "lstm": 0.45,
+    "tcn": -5.551115123125783e-17
+   },
+   "rmse": 14.006400880894205,
+   "phm": 11273.709611569773
+  },
+  "best_single_rmse": 14.755767459393956
+ },
+ "serving": {
+  "single": {
+   "rul": 125.0,
+   "alarm": false,
+   "extrapolating": false,
+   "latency_ms": 209.76890000747517
+  },
+  "short_history_refused": false,
+  "short_history_problems": [],
+  "batch": {
+   "n_scored": 100,
+   "n_skipped": 0,
+   "alarms": 18,
+   "extrapolating": 0,
+   "units_per_second": 9.286507592291423,
+   "seconds": 10.76831079996191
+  },
+  "http_ok": true,
+  "routes": [
+   "/docs",
+   "/docs/oauth2-redirect",
+   "/health",
+   "/model",
+   "/openapi.json",
+   "/redoc",
+   "/score"
+  ],
+  "http": {
+   "error": "KeyError: \"None of [Index(['op1', 'op2', 'op3'], dtype='object')] are in the [columns]\""
+  },
+  "container": {
+   "dockerfile": "C:\\Users\\riyas\\Desktop\\manufacturing-hm\\ml1-rul-platform\\deploy\\Dockerfile",
+   "compose": "C:\\Users\\riyas\\Desktop\\manufacturing-hm\\ml1-rul-platform\\deploy\\compose.yaml",
+   "built": false,
+   "note": "emitted for review; no container runtime in this environment"
+  }
+ },
+ "edge": {
+  "measured": {
+   "file_kb": 318.2392578125,
+   "p50_ms": 0.30785001581534743,
+   "p99_ms": 0.5493269889848303,
+   "preds": "[124.5738   124.49735  124.466    124.474464 124.43988  124.4311\n 124.30223  124.224335 124.247505 124.20677  123.969765 123.96104\n 123.94026  123.92413  123.78471  123.79729  123.74015  123.66344\n 123.62883  123.606544 123.60327  123.52302  123.39382  123.386696\n 123.31179  123.36409  123.181526 123.24589  123.18318  123.09211\n 123.03501  123.06662  122.9682   122.90043  122.8551   122.829254\n 122.75481  122.65879  122.60788  122.48466  122.39214  122.54635\n 122.44705  122.25911  122.31889  122.35347  122.265396 122.266\n 122.23899  122.20744  122.051285 121.99169  122.10163  122.06039\n 122.065735 121.92932  122.05536  121.951126 121.77873  121.66999\n 121.66948  121.62094  121.605515 121.55958  121.547775 121.42119\n 121.36763  121.357925 120.99032  120.86095  120.97106  120.98887\n 121.19926  121.12069  121.39548  121.17216  121.15122  121.26089\n 121.120995 121.209496 121.2452   121.3431   121.23812  121.04745\n 121.275475 121.180916 120.9875   120.86858  120.39697  120.549835\n 120.516396 119.49515  118.895035 118.87642  119.02159  118.88397\n 118.03454  118.533844 117.70183  117.35048  118.44557  116.82937\n 116.9117   117.76842  116.46242  116.45429  117.44969  117.12721\n 116.18758  116.9346   117.206505 115.62135  116.68011  117.20735\n 116.69672  117.242485 116.75444  116.52873  114.615944 115.917595\n 115.97118  115.38216  115.59257  115.93316  115.558304 114.50581\n 113.95548  114.36474  114.56117  114.08658  114.51946  114.0139\n 112.36853  112.829506 113.25566  115.00028  114.21618  113.60543\n 113.64627  113.04648  111.71227  113.09387  110.3162   112.05769\n 111.70931  110.67924  109.19448  109.70418  110.403    110.80668\n 110.85911  110.26895  106.90739  108.251495 108.47048  109.49142\n 105.32734  106.820915 106.56926  104.435135 104.05806  106.13293\n 105.51174  105.99555  107.19534  107.28482  106.19558  105.34015\n 104.95335  104.50034  103.71328  103.91481  102.68183  101.22954\n 100.12587  101.33836   99.98922   99.74347   98.89025   95.951324\n  99.39444   98.04861   98.302315  97.334145  98.73676   93.83439\n  92.34832   94.3843    92.625595  93.465866  91.353615  89.13138\n  87.06313   81.66433   82.18061   80.05506   82.54034   80.00618\n  77.7074    77.149605  79.60648   74.65123   71.714745  73.58697\n  73.35911   78.49766   77.725815  71.31357   73.830894  73.20028\n  68.90668   67.751175  68.02853   70.62833   60.593636  66.28588\n  61.828987  58.551563  58.21011   57.920185  57.39896   55.73049\n  54.184162  51.772526  52.811302  52.129963  52.852596  51.58456\n  52.284626  49.905766  49.32373   49.488182  50.938953  49.484367\n  47.523884  45.031376  42.287407  42.299816  41.550163  42.677666\n  38.599655  41.054985  39.78718   38.01998   37.539448  36.55405\n  35.24254   34.83415   32.557167  32.797653  31.8604    30.17334\n  30.733942  29.60781   29.41825   28.11866 ]"
+  },
+  "projection": [
+   {
+    "target": "desktop x86, 1 thread (measured)",
+    "ghz": 3.0,
+    "note": "measured",
+    "p50_ms": 0.30785001581534743,
+    "p99_ms": 0.5493269889848303
+   },
+   {
+    "target": "gateway ~1.6 GHz x86",
+    "ghz": 1.6,
+    "note": "projected",
+    "p50_ms": 0.5772187796537764,
+    "p99_ms": 1.0299881043465569
+   },
+   {
+    "target": "ARM Cortex-A72 @1.5 GHz",
+    "ghz": 1.5,
+    "note": "projected",
+    "p50_ms": 0.6157000316306949,
+    "p99_ms": 1.0986539779696607
+   },
+   {
+    "target": "ARM Cortex-A53 @1.2 GHz",
+    "ghz": 1.2,
+    "note": "projected",
+    "p50_ms": 0.7696250395383686,
+    "p99_ms": 1.373317472462076
+   }
+  ],
+  "host": "Intel64 Family 6 Model 126 Stepping 5, GenuineIntel",
+  "caveat": "frequency scaling only; ignores cache, memory bandwidth, SIMD width and thermal throttling"
+ },
+ "mixture": {
+  "fd": "FD004",
+  "baseline": {
+   "rmse": 16.075767766373943,
+   "phm": 210784.10766518206
+  },
+  "sweep": [
+   {
+    "temperature": 0.1,
+    "rmse": 16.567511192249547,
+    "phm": 209903.80267533803,
+    "gate_entropy": 0.023866401931716887,
+    "effective_units": [
+     142.44573993776999,
+     88.81006775605168
+    ],
+    "n_units": 229
+   },
+   {
+    "temperature": 0.25,
+    "rmse": 16.419029277755257,
+    "phm": 192005.1236078485,
+    "gate_entropy": 0.07129900971920328,
+    "effective_units": [
+     143.80256083142012,
+     92.00326610568355
+    ],
+    "n_units": 229
+   },
+   {
+    "temperature": 0.5,
+    "rmse": 16.169469596315313,
+    "phm": 193820.1601474684,
+    "gate_entropy": 0.1576830969731754,
+    "effective_units": [
+     148.22322875511162,
+     96.92046772780225
+    ],
+    "n_units": 229
+   },
+   {
+    "temperature": 1.0,
+    "rmse": 16.041131683672603,
+    "phm": 189991.03040613938,
+    "gate_entropy": 0.320305076677285,
+    "effective_units": [
+     156.78997064527414,
+     108.17608949914886
+    ],
+    "n_units": 229
+   },
+   {
+    "temperature": 2.0,
+    "rmse": 16.038200817660176,
+    "phm": 183730.04048826703,
+    "gate_entropy": 0.6019944886340234,
+    "effective_units": [
+     173.4862693701384,
+     138.47395334235668
+    ],
+    "n_units": 229
+   },
+   {
+    "temperature": 4.0,
+    "rmse": 15.918882584138222,
+    "phm": 193648.9139871229,
+    "gate_entropy": 0.8508912494486323,
+    "effective_units": [
+     199.4512000652146,
+     185.88267199510938
+    ],
+    "n_units": 229
+   }
+  ],
+  "best": {
+   "temperature": 4.0,
+   "rmse": 15.918882584138222,
+   "phm": 193648.9139871229,
+   "gate_entropy": 0.8508912494486323,
+   "effective_units": [
+    199.4512000652146,
+    185.88267199510938
+   ],
+   "n_units": 229
+  },
+  "delta_rmse": -0.15688518223572068,
+  "silhouette": 0.41401845245017244
+ },
+ "concept": {
+  "injection": {
+   "factor": 0.65,
+   "rows_affected": 20,
+   "units_affected": 20,
+   "mean_rul_before": 79.65,
+   "mean_rul_after": 51.772499999999994
+  },
+  "n_snapshots": 20,
+  "input_monitor": {
+   "features_breaching_psi": 5,
+   "n_features": 85,
+   "max_psi": 1.2661047732363038,
+   "max_delta_before_after": 0.0,
+   "n_rows_compared": 2163
+  },
+  "residual_monitor": {
+   "mean_residual": 23.888515741012917,
+   "z": 6.84069407294182,
+   "fired": true,
+   "n": 20,
+   "standard_error": 4.075244368881909,
+   "direction": "optimistic",
+   "rmse": 27.10902871695029
+  },
+  "latency": {
+   "page_hinkley_failures": null,
+   "page_hinkley_fired": false,
+   "cumulative_3sigma_failures": 5,
+   "n_failures_available": 20
+  },
+  "baseline": {
+   "mean_residual": -3.9889842589870796,
+   "sd": 18.225046867486352
+  }
+ },
+ "intervals": {
+  "n_units": 20,
+  "n_units_total": 20,
+  "n_missed": 0,
+  "median": {
+   "point": 24.0,
+   "lo": 21.0,
+   "hi": 27.0,
+   "n": 20,
+   "n_boot": 4000,
+   "width": 6.0
+  },
+  "p05": {
+   "point": 16.9,
+   "lo": 15.0,
+   "hi": 20.95,
+   "n": 20,
+   "n_boot": 4000,
+   "width": 5.949999999999999
+  },
+  "mean": {
+   "point": 24.95,
+   "lo": 22.45,
+   "hi": 27.85,
+   "n": 20,
+   "n_boot": 4000,
+   "width": 5.400000000000002
+  }
+ },
+ "reality": {
+  "rows": [
+   {
+    "variant": "clean C-MAPSS (baseline)",
+    "rmse": 14.755767459393956,
+    "phm": 12677.941221129371,
+    "bias": -4.584901876118208,
+    "rmse_delta": 0.0
+   },
+   {
+    "variant": "censored: 30 failures, random",
+    "rmse": 15.985344224519208,
+    "phm": 17844.262875305067,
+    "bias": -2.6783072372900216,
+    "labelled_rows": 6336,
+    "n_failures": 30,
+    "rmse_delta": 1.2295767651252518
+   },
+   {
+    "variant": "censored: 30 failures, informative",
+    "rmse": 18.503521825098783,
+    "phm": 21515.197118894568,
+    "bias": -7.094719625211269,
+    "labelled_rows": 5940,
+    "n_failures": 30,
+    "rmse_delta": 3.747754365704827
+   },
+   {
+    "variant": "censored: 8 failures, random",
+    "rmse": 23.720505387151672,
+    "phm": 51586.93070799812,
+    "bias": -9.095090908074019,
+    "labelled_rows": 1587,
+    "n_failures": 8,
+    "rmse_delta": 8.964737927757715
+   },
+   {
+    "variant": "censored: 8 failures, informative",
+    "rmse": 21.692573805112993,
+    "phm": 45453.65698660789,
+    "bias": -7.008954174607621,
+    "labelled_rows": 1578,
+    "n_failures": 8,
+    "rmse_delta": 6.936806345719036
+   },
+   {
+    "variant": "sensor drift 0.5 sd/life on deployed data",
+    "rmse": 16.0372219316743,
+    "phm": 15026.947728706757,
+    "bias": -6.104420239721032,
+    "detail": {
+     "drifting_sensors": [
+      "s13",
+      "s12",
+      "s15"
+     ],
+     "drift_over_life_sd": 0.5,
+     "typical_life_cycles": 207.5,
+     "replacements": [
+      {
+       "unit": 4,
+       "sensor": "s13",
+       "at_cycle": 48,
+       "step_in_sd": -0.535669373161111
+      },
+      {
+       "unit": 93,
+       "sensor": "s12",
+       "at_cycle": 77,
+       "step_in_sd": 0.9470809631292422
+      }
+     ]
+    },
+    "rmse_delta": 1.281454472280343
+   },
+   {
+    "variant": "sensor drift 1.0 sd/life on deployed data",
+    "rmse": 16.804835355727004,
+    "phm": 16521.142281523662,
+    "bias": -7.21309921474355,
+    "detail": {
+     "drifting_sensors": [
+      "s13",
+      "s12",
+      "s15"
+     ],
+     "drift_over_life_sd": 1.0,
+     "typical_life_cycles": 207.5,
+     "replacements": [
+      {
+       "unit": 4,
+       "sensor": "s13",
+       "at_cycle": 48,
+       "step_in_sd": -0.535669373161111
+      },
+      {
+       "unit": 93,
+       "sensor": "s12",
+       "at_cycle": 77,
+       "step_in_sd": 0.9470809631292422
+      }
+     ]
+    },
+    "rmse_delta": 2.0490678963330478
+   },
+   {
+    "variant": "sensor drift 2.0 sd/life on deployed data",
+    "rmse": 17.80863417086446,
+    "phm": 18653.538635373017,
+    "bias": -8.311242932193316,
+    "detail": {
+     "drifting_sensors": [
+      "s13",
+      "s12",
+      "s15"
+     ],
+     "drift_over_life_sd": 2.0,
+     "typical_life_cycles": 207.5,
+     "replacements": [
+      {
+       "unit": 4,
+       "sensor": "s13",
+       "at_cycle": 48,
+       "step_in_sd": -0.535669373161111
+      },
+      {
+       "unit": 93,
+       "sensor": "s12",
+       "at_cycle": 77,
+       "step_in_sd": 0.9470809631292422
+      }
+     ]
+    },
+    "rmse_delta": 3.0528667114705055
+   },
+   {
+    "variant": "label noise sd 5, +3 late bias",
+    "rmse": 14.637169678777354,
+    "phm": 14292.431364581642,
+    "bias": -1.029384797088807,
+    "detail": {
+     "sd_cycles": 5.0,
+     "late_bias_cycles": 3.0,
+     "mean_shift": 3.601710346290433,
+     "n_units": 80
+    },
+    "rmse_delta": -0.11859778061660187
+   },
+   {
+    "variant": "label noise sd 15, +9 late bias",
+    "rmse": 17.5016274772866,
+    "phm": 27806.294914855087,
+    "bias": 5.865931029403475,
+    "detail": {
+     "sd_cycles": 15.0,
+     "late_bias_cycles": 9.0,
+     "mean_shift": 10.8051310388713,
+     "n_units": 80
+    },
+    "rmse_delta": 2.7458600178926442
+   },
+   {
+    "variant": "label noise sd 30, +18 late bias",
+    "rmse": 27.315950655033674,
+    "phm": 146045.11799637016,
+    "bias": 16.687555567732097,
+    "detail": {
+     "sd_cycles": 30.0,
+     "late_bias_cycles": 18.0,
+     "mean_shift": 21.6102620777426,
+     "n_units": 80
+    },
+    "rmse_delta": 12.560183195639718
+   },
+   {
+    "variant": "build B (held out) scored by a build-B model",
+    "rmse": 15.558821281852877,
+    "phm": 10535.479340404778,
+    "bias": -5.847952409010492,
+    "detail": {
+     "build_a_units": 40,
+     "build_b_units": 40,
+     "offset_sd_fraction": 0.4,
+     "max_offset_in_sd": 0.8814039522586603,
+     "build_b_test_units": 13
+    },
+    "rmse_delta": 0.8030538224589208
+   },
+   {
+    "variant": "build B (held out) scored by a build-A model",
+    "rmse": 13.805229458776068,
+    "phm": 11753.301030153536,
+    "bias": -3.2246554280086337,
+    "rmse_vs_matched": -1.7535918230768086,
+    "rmse_delta": -0.9505380006178878
+   }
+  ],
+  "baseline_rmse": 14.755767459393956
+ },
+ "wall_seconds": 2706.591287999996
+}

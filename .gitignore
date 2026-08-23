@@ -6,3 +6,9 @@ __pycache__/
 *.db-shm
 *.onnx
 out/*.log
+
+# pass 3 artefacts
+registry/
+deploy/
+out/mlruns/
+out/rul_edge*.onnx
