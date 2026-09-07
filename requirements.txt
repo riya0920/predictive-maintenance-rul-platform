@@ -1,0 +1,7 @@
+fastapi
+numpy
+pandas
+pydantic
+pytest
+scikit-learn
+torch
