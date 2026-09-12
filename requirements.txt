@@ -5,3 +5,4 @@ pydantic
 pytest
 scikit-learn
 torch
+onnxruntime              # ONNX int8 edge benchmark + inference (src/edge.py)
