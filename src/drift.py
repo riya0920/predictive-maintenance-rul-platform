@@ -161,8 +161,8 @@ class RetrainTrigger:
         rec["RETRAIN"] = bool(len(recent) >= self.k_windows
                               and all(h["breached"] for h in recent))
         rec["action"] = (
-            "RETRAIN — persistent, multi-feature drift" if rec["RETRAIN"]
-            else "investigate — single window breached" if rec["breached"]
+            "RETRAIN: persistent, multi-feature drift" if rec["RETRAIN"]
+            else "investigate: single window breached" if rec["breached"]
             else "no action"
         )
         return rec

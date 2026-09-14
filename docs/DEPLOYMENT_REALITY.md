@@ -22,8 +22,8 @@ almost none of the supervised framing above survives it:
 
 The right first move on a low-event fleet is **survival analysis with censoring**
 (Kaplan–Meier for a fleet-level baseline, Cox or a survival forest for covariates),
-because censored observations — "this machine has run 8,000 hours and has not
-failed" — are *evidence*, and every method in this repo throws them away. C-MAPSS
+because censored observations, "this machine has run 8,000 hours and has not
+failed", are *evidence*, and every method in this repo throws them away. C-MAPSS
 hides the censoring problem by giving you the answer key.
 
 None of that is built here. Naming it is the honest half.
@@ -54,14 +54,14 @@ wear drawn from one distribution. A real fleet has:
 - **Duty-cycle mixes.** The same machine in a Nevada plant and a Gulf Coast plant
   degrades differently, and the operating-condition variables that would tell you
   so are often not instrumented.
-- **Site-specific installation effects** — foundation, alignment, upstream process
-  — that behave like a permanent per-asset offset.
+- **Site-specific installation effects**, foundation, alignment, upstream process,
+  that behave like a permanent per-asset offset.
 
 The consequence is that a single fleet model is a mixture model whether you
 acknowledge it or not. The FD004 gap in `RESULTS.md` is a small, clean version of
 this: one model averaging two fault modes. In the field it is one model averaging
 several dozen unlabelled contexts, and the useful structures are per-asset
-normalisation and hierarchical/partial-pooling models — neither built here.
+normalisation and hierarchical/partial-pooling models: neither built here.
 
 ## 4. Sensor drift, replacement, and recalibration
 
@@ -80,7 +80,7 @@ In the field, all four happen, and each corrupts the model in a different way:
   sequence model in this repo would do exactly that.
 
 None of these detectors exist here. The minimum viable version is a per-tag
-plausibility and step-change monitor at ingest — which is what `SE-1` in this
+plausibility and step-change monitor at ingest, which is what `SE-1` in this
 portfolio is about, and the two are deliberately not wired together.
 
 ## 5. Maintenance-log label noise
@@ -91,12 +91,12 @@ from work orders, and work orders say things like:
 - "Replaced bearing" on a date that is the date somebody *typed it in*, not the
   date the machine stopped
 - "No fault found" after a genuine intermittent
-- a preventive replacement that pre-empted a failure that never happened — a
+- a preventive replacement that pre-empted a failure that never happened: a
   **right-censored** event recorded as a maintenance event
 - one work order covering three repairs, one of which is the one you care about
 
 A model trained on this has label noise that is *correlated with the thing being
-predicted* — machines that get attention have better labels — which is worse than
+predicted*, machines that get attention have better labels, which is worse than
 random noise and cannot be averaged away. Practically, the useful step before any
 modelling is a labelling review with the maintenance planners: which work orders
 represent a functional failure, and what is the timestamp uncertainty on each. That
@@ -129,7 +129,7 @@ To be explicit about scope, because the surrounding README says "20%":
 
 - No MLflow tracking or model registry, no retraining pipeline, no drift monitor
   with a documented retrain trigger. Named in the README as missing.
-- No transformer or TCN — one sequence model, done once.
+- No transformer or TCN: one sequence model, done once.
 - The ONNX latency table is measured on a desktop CPU pinned to one thread. That
   stands in for a gateway; it is **not** a measurement on gateway hardware, and an
   ARM gateway at 1.2 GHz will not reproduce it.

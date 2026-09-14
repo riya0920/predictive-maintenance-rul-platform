@@ -1,6 +1,6 @@
 """ML-1 tests: the metrics and target engineering everything else is scored with.
 
-A wrong PHM score or a leaky feature would not crash anything — it would just make
+A wrong PHM score or a leaky feature would not crash anything; it would just make
 every table in RESULTS.md wrong in a way that reads fine. These are the tests that
 would notice.
 """
