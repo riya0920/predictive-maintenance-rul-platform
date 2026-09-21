@@ -32,9 +32,21 @@ conditions, two faults). A method that only reports FD001 hasn't shown much.
 
 ![Predicted vs true remaining life](docs/img/rul_demo.png)
 
-*Four engines the model never saw in training (`python make_demo.py`). Grey is the
-true remaining life, blue is the prediction. The red line marks where the alarm
-fires: 15-21 cycles before failure on each engine.*
+**How to read this chart** (`python make_demo.py`): four engines the model never
+saw in training, each from its first flight to failure. The x-axis is the engine's
+age in cycles, and the y-axis is how many cycles it has left.
+
+- **Grey = the true remaining life.** It is flat at 125 early on on purpose: a
+  healthy engine looks the same at 300 or 200 cycles left, so the target is capped
+  and simply means "healthy". Then it falls to 0 at failure.
+- **Blue = the model's prediction**, made every cycle. It is noisy early on and
+  most accurate near the end, which is where the decision is made.
+- **Red dotted = the alarm level** (25 cycles left). **Red vertical = when the
+  alarm fires**: the prediction has to stay below 25 for 5 cycles in a row. The
+  label is the warning time: 15-21 cycles on these engines.
+
+On engine 22 the model guesses too low for much of its life, but the alarm still
+fires at the right time, because it only reacts near the end.
 
 ## Skills and keywords
 
