@@ -6,8 +6,19 @@ A system that predicts **how many more cycles a jet engine can run before it
 fails** (its Remaining Useful Life, or RUL), and then decides **when to raise a
 maintenance alarm**.
 
-It uses the real **NASA C-MAPSS** turbofan dataset: all four sub-datasets, 43 MB,
-not a generator or a subset ([data/CMAPSS/SOURCE.md](data/CMAPSS/SOURCE.md)).
+It uses the real **NASA C-MAPSS** turbofan dataset (43 MB, not a generator or a
+subset; see [data/CMAPSS/SOURCE.md](data/CMAPSS/SOURCE.md)). C-MAPSS is NASA's
+simulation of jet engines wearing out. Each engine logs 21 sensors (temperatures,
+pressures, fan speeds) once per flight cycle until it fails.
+
+The dataset comes in four parts, **FD001 to FD004**. Each part is a separate fleet
+of engines, and they get harder along two axes:
+
+- **Operating conditions:** 1 means every flight has the same altitude, speed and
+  throttle. 6 means flights vary across six settings, so sensor readings jump
+  around for reasons unrelated to wear.
+- **Fault modes:** 1 means only the high-pressure compressor wears out. 2 means
+  either the compressor or the fan can wear out.
 
 | | operating conditions | fault modes | train engines | test engines |
 |---|---|---|---|---|
@@ -16,8 +27,8 @@ not a generator or a subset ([data/CMAPSS/SOURCE.md](data/CMAPSS/SOURCE.md)).
 | FD003 | 1 | 2 | 100 | 100 |
 | FD004 | 6 | 2 | 249 | 248 |
 
-FD001 is the easy one. FD002 and FD004 are hard because the engines fly in six
-different operating conditions.
+FD001 is the easiest (one condition, one fault). FD004 is the hardest (six
+conditions, two faults). A method that only reports FD001 hasn't shown much.
 
 ![Predicted vs true remaining life](docs/img/rul_demo.png)
 
