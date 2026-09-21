@@ -58,18 +58,18 @@ fires at the right time, because it only reacts near the end.
 
 **Data:** NASA C-MAPSS turbofan engine data, sensor data, Python, pandas, NumPy, matplotlib
 
-## What we did
+## What I did
 
 1. **Predicted RUL** with two kinds of model: a gradient-boosted tree (GBM) on
    hand-built sensor features, and deep sequence models (LSTM, then a TCN).
 2. **Turned predictions into an alarm.** A model that says "23 cycles left" is not
-   a decision. We built an alarm rule (threshold + "k readings in a row"), tuned it
+   a decision. I built an alarm rule (threshold + "k readings in a row"), tuned it
    by cost, and measured warning time and false alarms.
-3. **Checked our own numbers.** The FD002/FD004 results looked too good, so we ran
+3. **Checked my own numbers.** The FD002/FD004 results looked too good, so I ran
    an ablation to find which design choice produced them.
 4. **Built what deployment needs:** drift monitoring with a retrain trigger, a
    model registry, a scoring service, and ONNX export for edge devices.
-5. **Tested what breaks on a real fleet.** We damaged the data one way at a time
+5. **Tested what breaks on a real fleet.** I damaged the data one way at a time
    (fewer failures, label noise, sensor drift) and measured the cost of each.
 
 42 tests. CI runs on every push.
@@ -86,7 +86,7 @@ fires at the right time, because it only reacts near the end.
 | FD004 | **14.48** | 15.26 | 23.31 |
 
 \*Zheng et al. 2017 and Li et al. 2018, quoted, not reproduced. These are older
-papers used as a reference point, not the state of the art. We do not claim to
+papers used as a reference point, not the state of the art. I do not claim to
 beat the field.
 
 **The alarm** (the number a maintenance planner cares about):
@@ -163,7 +163,7 @@ better than the quoted 22.4 and 23.3.
 
 **Measure warning time on held-out training engines, not the test set.** Test
 engines are cut off before they fail, so there is no failure to measure a warning
-against. We kept 20 training engines aside per dataset for this. That is a small
+against. I kept 20 training engines aside per dataset for this. That is a small
 sample, so the warning time is reported with bootstrap intervals (P05 = 17 cycles,
 range 15-21).
 
@@ -192,7 +192,7 @@ found the two fault modes are real in the sensor data but give almost no
 prediction gain (0.16 RMSE at best). Without maintenance records naming the failed
 part, this is not worth more effort.
 
-## Bugs we found in our own work
+## Bugs I found in my own work
 
 Running things end to end caught six mistakes, all fixed:
 
