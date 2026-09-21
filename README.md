@@ -25,6 +25,16 @@ different operating conditions.
 true remaining life, blue is the prediction. The red line marks where the alarm
 fires: 15-21 cycles before failure on each engine.*
 
+## Skills and keywords
+
+**Machine learning:** predictive maintenance, remaining useful life (RUL) prediction, time-series regression, prognostics and health management (PHM), gradient boosting (scikit-learn HistGradientBoosting), deep learning (PyTorch LSTM, temporal convolutional network / TCN), ensemble learning, feature engineering, ablation study, hyperparameter tuning, mixture of experts, unsupervised clustering, bootstrap confidence intervals, cost-sensitive decision making, anomaly alarm policy
+
+**MLOps:** model registry, model lineage, MLflow, data drift and concept drift detection (PSI), automated retraining triggers, model monitoring, model serving (FastAPI, REST API), batch scoring, Dockerfile, CI/CD (GitHub Actions), pytest
+
+**Edge / deployment:** ONNX export, int8 quantization (ONNX Runtime), inference latency benchmarking (p50/p99), edge AI, IIoT
+
+**Data:** NASA C-MAPSS turbofan engine data, sensor data, Python, pandas, NumPy, matplotlib
+
 ## What we did
 
 1. **Predicted RUL** with two kinds of model: a gradient-boosted tree (GBM) on
