@@ -117,6 +117,38 @@ beat the field.
 Full numbers: [RESULTS.md](docs/RESULTS.md), [EXTENSIONS.md](docs/EXTENSIONS.md),
 [COMPLETION.md](docs/COMPLETION.md), [DEPLOYMENT_REALITY.md](docs/DEPLOYMENT_REALITY.md).
 
+## Why alarm at 25 cycles left, and not earlier?
+
+**The model predicts all along.** The blue line is a prediction every cycle. The
+alarm level is a separate choice: when to *act* on the prediction.
+
+**Early predictions are not reliable.** For most of its life an engine is healthy,
+and its sensors look like any other healthy engine. Wear starts slowly and only
+shows clearly near the end. That is why the error is about 3 cycles near failure
+and much larger early on. An alarm at "100 cycles left" would often be wrong.
+
+**Alarming early has a cost too.** Every early alarm throws away working engine
+life, and alarms that fire too often get ignored by crews, which is its own
+safety risk.
+
+**"Failure" here does not mean a crash.** In C-MAPSS, failure means the engine
+has worn past its safety margin and should stop flying. So 25 cycles of warning
+means 25 flights to schedule the repair first. At this setting **every engine got
+at least 10 cycles of warning and none were missed.**
+
+**25 is a setting, not a limit.** For more safety margin, raise it (FD004 already
+uses 45). The cost analysis showed the best setting did not change when a failure
+was made 5× or 100× more expensive, because nothing was being missed. It only moved
+with how much engine life you are willing to throw away. So an earlier alarm is a
+business and safety choice, not something the model prevents.
+
+**Catching the moment wear starts is a different problem.** That is anomaly
+detection: flag the engine as soon as it stops looking healthy. My
+[condition-monitoring project](https://github.com/riya0920/bearing-condition-monitoring)
+does this. A real system would use both: anomaly detection says "this engine has
+started to wear, watch it", and remaining-life prediction says "about 25 flights
+left, schedule the repair".
+
 ## Key decisions and why
 
 **Normalise sensors per operating condition.** This is the main reason FD002 and
