@@ -6,3 +6,5 @@ pytest
 scikit-learn
 torch
 onnxruntime              # ONNX int8 edge benchmark + inference (src/edge.py)
+lifelines                # survival analysis: Weibull AFT (src/survival.py)
+matplotlib               # figures (make_demo.py, uq_survival.py)

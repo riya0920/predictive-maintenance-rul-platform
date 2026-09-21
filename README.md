@@ -52,6 +52,8 @@ fires at the right time, because it only reacts near the end.
 
 **Machine learning:** predictive maintenance, remaining useful life (RUL) prediction, time-series regression, prognostics and health management (PHM), gradient boosting (scikit-learn HistGradientBoosting), deep learning (PyTorch LSTM, temporal convolutional network / TCN), ensemble learning, feature engineering, ablation study, hyperparameter tuning, mixture of experts, unsupervised clustering, bootstrap confidence intervals, cost-sensitive decision making, anomaly alarm policy
 
+**Uncertainty and survival analysis:** uncertainty quantification (UQ), conformal prediction, conformalized quantile regression (CQR), cross-conformal / CV+, Mondrian conformal, quantile regression, calibrated prediction intervals, coverage guarantees, survival analysis, time-to-event modeling, right-censored data, Weibull accelerated failure time (AFT) model, lifelines, landmarking, censoring-aware label imputation, concordance index (C-index), reliability engineering
+
 **MLOps:** model registry, model lineage, MLflow, data drift and concept drift detection (PSI), automated retraining triggers, model monitoring, model serving (FastAPI, REST API), batch scoring, Dockerfile, CI/CD (GitHub Actions), pytest
 
 **Edge / deployment:** ONNX export, int8 quantization (ONNX Runtime), inference latency benchmarking (p50/p99), edge AI, IIoT
@@ -69,10 +71,15 @@ fires at the right time, because it only reacts near the end.
    an ablation to find which design choice produced them.
 4. **Built what deployment needs:** drift monitoring with a retrain trigger, a
    model registry, a scoring service, and ONNX export for edge devices.
-5. **Tested what breaks on a real fleet.** I damaged the data one way at a time
+5. **Added calibrated uncertainty (conformal prediction).** Every prediction comes
+   with a guaranteed "at least X cycles left", and the alarm can fire on that safe
+   end instead of the best guess.
+6. **Added survival analysis.** A real fleet has few failures and many engines still
+   running. I tested whether those running engines can be used instead of thrown away.
+7. **Tested what breaks on a real fleet.** I damaged the data one way at a time
    (fewer failures, label noise, sensor drift) and measured the cost of each.
 
-42 tests. CI runs on every push.
+56 tests. CI runs on every push.
 
 ## Results
 
@@ -137,7 +144,8 @@ means 25 flights to schedule the repair first. At this setting **every engine go
 at least 10 cycles of warning and none were missed.**
 
 **25 is a setting, not a limit.** For more safety margin, raise it (FD004 already
-uses 45). The cost analysis showed the best setting did not change when a failure
+uses 45), or better, alarm on the calibrated lower bound instead of the best guess
+(see [Safety-first alarms](#safety-first-alarms-calibrated-uncertainty) below). The cost analysis showed the best setting did not change when a failure
 was made 5× or 100× more expensive, because nothing was being missed. It only moved
 with how much engine life you are willing to throw away. So an earlier alarm is a
 business and safety choice, not something the model prevents.
@@ -148,6 +156,68 @@ detection: flag the engine as soon as it stops looking healthy. My
 does this. A real system would use both: anomaly detection says "this engine has
 started to wear, watch it", and remaining-life prediction says "about 25 flights
 left, schedule the repair".
+
+## Safety-first alarms: calibrated uncertainty
+
+The model says "23 cycles left", but how wrong can that be? **Conformal prediction**
+turns each prediction into a guaranteed statement: *"at least X cycles left, and
+this is true 90% of the time."* I used **conformalized quantile regression (CQR)**:
+a second GBM predicts the pessimistic 10th percentile directly, and a calibration
+step on engines it never trained on corrects it until the 90% is actually true.
+
+- **The guarantee holds:** 93% coverage on unseen engines against a 90% target, and
+  92% in the last 25 cycles, where the alarm decision is made. The quantile model
+  *before* calibration covered only 87% overall and 69% near failure.
+- **The alarm gets smarter.** Firing on the safe end of the range instead of the
+  best guess means the alarm fires early only on engines whose sensors look unusual.
+
+![Same safety, less waste](docs/img/safety_tradeoff.png)
+
+**How to read this chart:** each line shows how many of 80 test engines get missed
+(less than 10 cycles of warning) for a given amount of average warning. Further
+left means less engine life thrown away.
+
+- **To miss zero engines, the plain alarm needs 31.9 cycles of average warning. The
+  CQR alarm needs 16.5.** Same safety, about **15 fewer cycles of engine life
+  thrown away per engine** (95% CI 4.5 to 17.4).
+- **Why:** the model is confidently wrong on a few unusual engines. A plain
+  threshold has to fire early on *every* engine to catch them. CQR widens the range
+  only where the sensors look unusual.
+- **Honest caveat:** choosing the policy on half the engines and testing on the
+  other half, both still miss about 1 engine in 30. CQR does it with 11.7 fewer
+  cycles thrown away, but neither is a no-miss guarantee on new engines. A real
+  safety case would add a margin on top.
+
+## Learning from engines that haven't failed: survival analysis
+
+A real fleet might have 300 engines and only 5 recorded failures. The usual model
+throws the other 295 away, because a running engine has no "remaining life" label.
+But *"this engine has run 180 cycles and is still fine"* is still useful information.
+That is what survival analysis handles (the data is called **right-censored**).
+
+I simulated this by hiding most failures (only 5, 10 or 20 engines observed to
+failure) and compared six ways to use the fleet, over 3 random seeds on all four
+datasets:
+
+![Survival analysis results](docs/img/survival_demo.png)
+
+- **The trap:** pretending running engines failed when observation stopped is the
+  worst option everywhere (RMSE ~35-40). It teaches the model that healthy engines
+  are about to die.
+- **What works:** fit a **Weibull survival model** (the standard reliability model)
+  on the failed engines. Then use it to fill in a label for each running engine:
+  *"given it has survived this long, how much life is expected to be left?"* Then
+  train the GBM on everything.
+- **Result:** with 5 or 10 failures it beats throwing the running engines away
+  (RMSE 24.2 vs 25.2 and 19.7 vs 21.4, averaged over datasets). It's also steadier
+  from seed to seed. With 20 failures there's no gain. Modest, and I report it as
+  modest.
+- **A surprise:** the Weibull model on its own gets *worse* when fed the running
+  engines. It's a straight-line model, and the running engines (mostly healthy
+  rows) pull the line the wrong way. So the survival model works best as a *label
+  generator* for the GBM, not as the predictor.
+
+Full tables, coverage per dataset and the methods: [docs/UNCERTAINTY_SURVIVAL.md](docs/UNCERTAINTY_SURVIVAL.md).
 
 ## Key decisions and why
 
@@ -244,8 +314,15 @@ python extend.py
 python complete.py
 ```
 
+```bash
+python uq_survival.py
+```
+
 `make_demo.py` draws the chart at the top. `ablation.py` is the FD002/FD004 audit, `extend.py` is drift and fault modes, and
 `complete.py` is the registry, TCN, serving, and deployment-reality runs (~45 min).
+`uq_survival.py` is conformal prediction and survival analysis (~50 min; add
+`--report-only` to redraw the charts and rebuild
+[docs/UNCERTAINTY_SURVIVAL.md](docs/UNCERTAINTY_SURVIVAL.md) from saved results).
 
 ## Layout
 
@@ -263,7 +340,9 @@ src/registry.py   model registry (model + normaliser checked together)
 src/serve.py      scoring service
 src/robustness.py deployment-reality experiments
 src/edge.py       ONNX export, int8, latency benchmark
+src/conformal.py  conformal lower bounds: split, Mondrian, CQR
+src/survival.py   Weibull survival model, censoring-aware label imputation, C-index
 deploy/           Dockerfile and compose (not built)
 registry/         saved models with their normalisers
-tests/            42 tests
+tests/            56 tests
 ```

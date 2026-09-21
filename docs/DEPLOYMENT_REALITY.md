@@ -26,7 +26,7 @@ because censored observations, "this machine has run 8,000 hours and has not
 failed", are *evidence*, and every method in this repo throws them away. C-MAPSS
 hides the censoring problem by giving you the answer key.
 
-None of that is built here. Naming it is the honest half.
+Survival analysis is now built and measured in [UNCERTAINTY_SURVIVAL.md](UNCERTAINTY_SURVIVAL.md): a Weibull model used to impute labels for still-running engines beats discarding them when failures are scarce (5-10 observed), and adds nothing at 20. The health-index route and time-to-event metrics beyond the C-index are still not built.
 
 ## 2. The test set here is already censored, and that shaped the design
 
