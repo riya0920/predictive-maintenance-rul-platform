@@ -1,4 +1,4 @@
-# ML-1 - Predictive Maintenance Platform
+# Predictive Maintenance Platform
 
 ## What it is
 
@@ -18,6 +18,12 @@ not a generator or a subset ([data/CMAPSS/SOURCE.md](data/CMAPSS/SOURCE.md)).
 
 FD001 is the easy one. FD002 and FD004 are hard because the engines fly in six
 different operating conditions.
+
+![Predicted vs true remaining life](docs/img/rul_demo.png)
+
+*Four engines the model never saw in training (`python make_demo.py`). Grey is the
+true remaining life, blue is the prediction. The red line marks where the alarm
+fires: 15-21 cycles before failure on each engine.*
 
 ## What we did
 
@@ -158,6 +164,10 @@ Main results, about 18 minutes on CPU. Writes [docs/RESULTS.md](docs/RESULTS.md)
 from the measured numbers. Add `--report-only` to rebuild the doc without retraining.
 
 ```bash
+python make_demo.py
+```
+
+```bash
 python ablation.py
 ```
 
@@ -169,7 +179,7 @@ python extend.py
 python complete.py
 ```
 
-`ablation.py` is the FD002/FD004 audit, `extend.py` is drift and fault modes, and
+`make_demo.py` draws the chart at the top. `ablation.py` is the FD002/FD004 audit, `extend.py` is drift and fault modes, and
 `complete.py` is the registry, TCN, serving, and deployment-reality runs (~45 min).
 
 ## Layout
